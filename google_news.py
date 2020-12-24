@@ -56,45 +56,49 @@ def sentiment(text):
 
 
 url_string='https://www.google.com/search?q=microsoft&tbm=nws&tbs=sbd:1'
-try:
-        req = Request(url_string,headers={'User-Agent': 'Chrome/86.0.4240.198'})
-        page = urlopen(req).read()
-        page = BeautifulSoup(page, 'lxml')
-        news_links = page.find_all('div', {'class': 'kCrYT'})
-        link_list = []
-        time_now = datetime.datetime.now()
-        for link in news_links:
-            try:
-                time = link.find('span').text
-                web = link.find('a')['href']
-                web = web.split('q=')[1]
-                web = web.split('&sa')[0]
-                print(web)
-                if 'mins' in time or 'min' in time:
-                    backward = time.split(' ')[0]
-                    delta = datetime.timedelta(minutes=int(backward))
-                    time_of_article = time_now - delta
-                elif 'hour' in time or 'hours' in time:
-                    backward = time.split(' ')[0]
-                    delta = datetime.timedelta(hours=int(backward))
-                    time_of_article = time_now - delta
-                elif 'day' in time or 'days' in time:
-                    backward = time.split(' ')[0]
-                    delta = datetime.timedelta(days=int(backward))
-                    time_of_article = time_now - delta
-                elif 'week' in time or 'weeks' in time:
-                    backward = time.split(' ')[0]
-                    delta = datetime.timedelta(weeks=int(backward))
-                    time_of_article = time_now - delta
 
+req = Request(url_string,headers={'User-Agent': 'Chrome/86.0.4240.198'})
+page = urlopen(req).read()
+page = BeautifulSoup(page, 'lxml')
+news_links = page.find_all('div', {'class': 'kCrYT'})
+link_list = []
+time_now = datetime.datetime.now()
+for link in news_links:
+            
+    try:
+        time = link.find('span').text
+        web = link.find('a')['href']
+        web = web.split('q=')[1]
+        web = web.split('&sa')[0]
+        link_list.append(web)
+        if 'mins' in time or 'min' in time:
+            backward = time.split(' ')[0]
+            delta = datetime.timedelta(minutes=int(backward))
+            time_of_article = time_now - delta
+        elif 'hour' in time or 'hours' in time:
+            backward = time.split(' ')[0]
+            delta = datetime.timedelta(hours=int(backward))
+            time_of_article = time_now - delta
+        elif 'day' in time or 'days' in time:
+            backward = time.split(' ')[0]
+            delta = datetime.timedelta(days=int(backward))
+            time_of_article = time_now - delta
+        elif 'week' in time or 'weeks' in time:
+            backward = time.split(' ')[0]
+            delta = datetime.timedelta(weeks=int(backward))
+            time_of_article = time_now - delta
+    except:
+        pass
                
-               
-                article = Article(web)
-                article.download()
-                article.parse()
-                article.nlp()
-                text = article.text
-                # print(text)
+print(link_list)
+
+for web in link_list:               
+    article = Article(web)
+    article.download()
+    article.parse()
+    article.nlp()
+    text = article.text
+            #print(text)
 
 
                             #print(time_of_article.strftime('%Y-%m-%d %H:%M'))
@@ -102,14 +106,11 @@ try:
                         #print(web)
                                
 
-                score=sentiment(text)
-                print(score)
+    score=sentiment(text)
+    print(score)
 
                         #print('======================')
 
                           
-            except:
-                    pass
+          
                 
-except:
-    pass
